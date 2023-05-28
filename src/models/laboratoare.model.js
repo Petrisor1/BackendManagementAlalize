@@ -1,7 +1,7 @@
 const {DataTypes, Sequelize} =require('sequelize');
 
 
-module.exoprts=(sequelize,Sequelize)=>{
+module.exports=(sequelize,Sequelize)=>{
     const Laborator=sequelize.define('laboratoare',{
         laborator_id: {
             type: Sequelize.INTEGER,

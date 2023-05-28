@@ -22,7 +22,7 @@ db.pacienti = require('./pacienti.model.js')(sequelize,Sequelize);
 db.laboratoare = require('./laboratoare.model.js')(sequelize,Sequelize);
 db.tipuri_teste = require('./tipuri_teste.model.js')(sequelize,Sequelize);
 db.teste = require('./teste.model.js')(sequelize,Sequelize);
-db.rezultate_teste = require('./testResult.model.js')(sequelize,Sequelize);
+db.rezultate_teste = require('./rezultate_teste.model.js')(sequelize,Sequelize);
 
 // Asocierile dintre modele
 db.pacienti.hasMany(db.rezultate_teste, { foreignKey: 'pacient_id', as: 'rezultate_teste' });

@@ -36,7 +36,7 @@ module.exports = (sequelize, Sequelize) => {
     parola:{
         type:Sequelize.STRING(250),
     },
-    other_info: {
+    alte_informatii: {
       type: Sequelize.TEXT,
     }
   },{

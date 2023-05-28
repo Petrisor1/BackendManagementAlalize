@@ -18,6 +18,12 @@ const PORT=3000;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
 
+require("./src/routes/pacient.routes")(app);
+require(".//src/routes/laborator.routes")(app);
+require(".//src/routes/rezultate_test.routes")(app);
+require("./src/routes/test.routes")(app);
+require("./src/routes/tip_test.routes")(app);
+
 app.listen(PORT, err =>
     {
         if(err) return console.log(`Cannot Listen on PORT:${PORT}`);

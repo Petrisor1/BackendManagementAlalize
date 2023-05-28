@@ -34,6 +34,7 @@ module.exports = {
     email:{
         type:Sequelize.STRING(250),
         allowNull:false,
+        unique: true,
     }
     ,
     parola:{
