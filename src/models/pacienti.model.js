@@ -16,6 +16,10 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING(150),
       allowNull: false,
     },
+    CNP:{
+      type: Sequelize.STRING(150),
+      allowNull: false,
+    },
     data_nastere: {
       type: Sequelize.DATE,
       allowNull: false,

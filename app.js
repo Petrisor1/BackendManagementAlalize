@@ -24,6 +24,7 @@ require(".//src/routes/rezultate_test.routes")(app);
 require("./src/routes/test.routes")(app);
 require("./src/routes/tip_test.routes")(app);
 require("./src/routes/auth_pacient.routes.js")(app);
+require("./src/routes/auth_laborator.routes.js")(app);
 app.listen(PORT, err =>
     {
         if(err) return console.log(`Cannot Listen on PORT:${PORT}`);

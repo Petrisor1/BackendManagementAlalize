@@ -3,7 +3,7 @@ module.exports =app=>{
     var router=require('express').Router();
 
     //obtineti taote tipurile de teste
-    router.get("/taote_tipuri_teste",tip_test.findAll);
+    router.get("/toate_tipuri_teste",tip_test.findAll);
 
     //crearea unui nou tip de test
     router.post("/create_tip_test",tip_test.create);

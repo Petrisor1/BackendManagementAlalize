@@ -11,8 +11,11 @@ exports.create=(req,res)=>{
     }
     else{
         Tip_test.create({
-            tip_nume:tip_nume
-        });
+            tip_nume:req.body.tip_nume
+        }).then(rasp =>res.status(200).send({message:"SUCCES"})).catch(err => 
+            {console.log(err.message)
+            res.status(500).send({message:err.message} );
+            });
     }
 }
 

@@ -11,13 +11,13 @@ exports.create=(req,res)=>{
         bcrypt.hash(req.body.parola,10).then(hash=>{
             Laborator.create(
                 {
-                    nume_laborator:nume_laborator,
-                    locatie:locatie,
-                    email:email,
+                    nume_laborator:req.body.nume_laborator,
+                    locatie:req.body.locatie,
+                    email:req.body.email,
                     parola:hash,
                 }
             )
-        }).then(data=>{res.send(data)}).catch(err=>res.status(404).send({message:err.message+" Eraore la crearea unui nou laborator"}));
+        }).then(data=>{res.send("Laborator creat cu succes")}).catch(err=>res.status(404).send({message:err.message+" Eraore la crearea unui nou laborator"}));
     }
 }
 

@@ -1,6 +1,6 @@
 const db = require("../models");
 const config = require("../../config/auth.config.js");
-const Pacient = db.pacienti;
+const Laborator = db.laboratoare;
 
 const Op = db.Sequelize.Op;
 
@@ -10,17 +10,17 @@ const { match } = require("minimatch");
 
 
 exports.signin = (req, res) => {
-    Pacient.findOne({
+    Laborator.findOne({
       where: {
-        CNP: req.body.CNP
+        email: req.body.email
       }
     })
-      .then(pacient => {
-          if (!pacient) {
-            return res.status(404).send({ message: "CNP Not found." });
+      .then(laborator => {
+          if (!laborator) {
+            return res.status(404).send({ message: "email Not found." });
           }
     
-     const  passwordIsValid= bcrypt.compareSync(req.body.parola,pacient.parola)
+     const  passwordIsValid= bcrypt.compareSync(req.body.parola,laborator.parola)
           
             if (!passwordIsValid) {
               return res.status(401).send({
@@ -29,13 +29,13 @@ exports.signin = (req, res) => {
               });
             }
             
-            var token = jwt.sign({ id: pacient.id,email:pacient.email }, config.secret, {
+            var token = jwt.sign({ id: laborator.id,email:laborator.email }, config.secret, {
              expiresIn: 1000 // 24 hours
              });
         
                 res.status(200).send({
-                  // id: pacient.id,
-                  // email: pacient.email,
+                  // id: laborator.id,
+                  // email: laborator.email,
                   // accessToken: token
                   token
                 });
