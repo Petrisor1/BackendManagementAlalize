@@ -18,6 +18,8 @@ exports.create=(req,res)=>{
                 contact_info:req.body.contact_info,
                 email:req.body.email,
                 parola:hash,
+                CNP:req.body.CNP,
+                adresa:req.body.adresa,
                 alte_informatii:req.body.alte_informatii
             }).then(res.status(200).send({message:"Pacient creat cu succes"})).catch(err=>res.send({message:err.message+ "Eroare la adaugarea pacientului"}));
         })

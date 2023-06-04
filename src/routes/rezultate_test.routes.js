@@ -15,6 +15,7 @@ module.exports =app=>{
     //actualizarea unui rezultat
     router.put("/actualizeaza_rezultat/:id",rezultat_test.update);
     
+    router.put("/incarcaFisier",rezultat_test.iaDateFrontAdaugaBazaDate);
+
     app.use("/rezultate",router);
 }
-

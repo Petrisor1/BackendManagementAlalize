@@ -23,6 +23,10 @@ module.exports = {
       type: Sequelize.STRING(150),
       allowNull: false,
     },
+    adresa:{
+      type: Sequelize.STRING(250),
+      
+    },
     data_nastere: {
       type: Sequelize.DATE,
       allowNull: false,
