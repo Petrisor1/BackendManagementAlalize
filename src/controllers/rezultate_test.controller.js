@@ -63,53 +63,76 @@ exports.iaDateFrontAdaugaBazaDate = (req, res) => {
       }
 
 
-const { AzureKeyCredential, DocumentAnalysisClient } = require("@azure/ai-form-recognizer");
+      const { AzureKeyCredential, DocumentAnalysisClient } = require("@azure/ai-form-recognizer");
 
-// set `<your-key>` and `<your-endpoint>` variables with the values from the Azure portal.
-const key = "169eea55d13845d6a2dde5de4247f4a7";
-const endpoint = "https://citirerezultateanalizemedicale.cognitiveservices.azure.com/";
+      const key = "169eea55d13845d6a2dde5de4247f4a7";
+      const endpoint = "https://citirerezultateanalizemedicale.cognitiveservices.azure.com/";
 
-// sample document
-//const formUrl = "https://raw.githubusercontent.com/Azure-Samples/cognitive-services-REST-api-samples/master/curl/form-recognizer/sample-layout.pdf"
-modelID='0ae89266-0d3a-4635-ae22-1823f30e1380';
-async function main() {
-const client = new DocumentAnalysisClient(endpoint, new AzureKeyCredential(key));
-const fileStream = fs.createReadStream(req.file.path);
-const poller = await client.beginAnalyzeDocumentFromUrl(modelID, fileStream);
+      const modelID='0ae89266-0d3a-4635-ae22-1823f30e1380';
+      const client = new DocumentAnalysisClient(endpoint, new AzureKeyCredential(key));
+      const fileStream = fs.createReadStream(req.file.path);
 
-const {
-    pages,
-    tables
-} = await poller.pollUntilDone();
+      try {
+          const poller = await client.beginAnalyzeDocumentFromUrl(modelID, fileStream);
+          const { pages, tables } = await poller.pollUntilDone();
+          
 
-console.log(result);
-if (pages.length <= 0) {
-    console.log("No pages were extracted from the document.");
-} else {
-    console.log("Pages:");
-    for (const page of pages) {
-        console.log("- Page", page.pageNumber, `(unit: ${page.unit})`);
-        console.log(`  ${page.width}x${page.height}, angle: ${page.angle}`);
-        console.log(`  ${page.lines.length} lines, ${page.words.length} words`);
+
+          var results = [];
+
+    tables.forEach(table => {
+        var tip_test = table.cells.find(cell => cell.rowIndex === 0).content;
+    
+    for (let i = 1; i < table.rowCount; i++) {
+        let test = table.cells.find(cell => cell.rowIndex === i && cell.columnIndex === 0);
+        let valoare_rezultat = table.cells.find(cell => cell.rowIndex === i && cell.columnIndex === 1);
+        let interval_referinta = table.cells.find(cell => cell.rowIndex === i && cell.columnIndex === 2);
+        let unitate = table.cells.find(cell => cell.rowIndex === i && cell.columnIndex === 3);
+
+        if (test && valoare_rezultat && interval_referinta && unitate) {
+            let result = {
+                "tip_test": tip_test,
+                "test": test.content,
+                "valoare_rezultat": parseFloat(valoare_rezultat.content),
+                "interval_referinta": interval_referinta.content,
+                "unitate": unitate.content
+            };
+            results.push(result);
+        }
     }
-}
-
-if (tables.length <= 0) {
-    console.log("No tables were extracted from the document.");
-} else {
-    console.log("Tables:");
-    for (const table of tables) {
-        console.log(
-            `- Extracted table: ${table.columnCount} columns, ${table.rowCount} rows (${table.spans} cells)`
-        );
-    }
-}
-}
-
-main().catch((error) => {
-console.error("An error occurred:", error);
-process.exit(1);
 });
+console.log(results);
+        ////////////////////////
+        //   tables.forEach((table, tableIndex) => {
+        //     console.log(`Table ${tableIndex + 1}:`);
+        
+            
+        //     let tableArray = Array(table.rowCount).fill().map(() => Array(table.columnCount).fill(null));
+        //     const tabele={
+        //         "tip_test":`${table.cells.content}`
+        //     }
+        //     JSON.parse( )
+        //     // Loop through each cell in the table.
+        //     table.cells.forEach(cell => {
+                
+        //         tableArray[cell.rowIndex][cell.columnIndex] = cell.content;
+        //     });
+        
+        //     // Print the reconstructed table.
+        //     tableArray.forEach(row => {
+        //         console.log(row.join('\t'));
+        //     });
+        //     console.log('\n');  // Print a newline between tables for clarity.
+        // });
+          // If you need to manipulate pages and tables objects, you can do so here before sending it as a response.
+
+          // Send the analysis result back as a response
+          res.status(200).json(results);
+
+      } catch (error) {
+          console.error("An error occurred:", error);
+          res.status(500).send({message:"An error occurred during document analysis"});
+      }
 
 
 
