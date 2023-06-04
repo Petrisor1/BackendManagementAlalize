@@ -52,3 +52,12 @@ exports.delete=(req,res)=>{
         
     }).catch(err=>res.status(404).send({message:err.message+" Eoare la stergerea laboratorului"}));
 }
+
+exports.emailNume=(req,res)=>{
+    Laborator.findOne({where:{email:req.body.email}}).then( rezultat=>
+        {
+            let modifiedResult = rezultat.toJSON(); // convert instance to JSON
+            modifiedResult.newParam = "New Parameter Value"; // add new parameter
+            res.send(modifiedResult);
+        }).catch(err=>res.status(404).send({message:err.message+""}));
+}

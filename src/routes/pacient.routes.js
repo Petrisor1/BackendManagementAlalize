@@ -14,5 +14,7 @@ module.exports =app=>{
     //actualizeaza pacient in functie de id
     router.put("/update_pacient/:id",pacient.update);
 
+    router.post("/iaByCNP",pacient.iaByCNP);
+
     app.use("/pacienti",router);
 }

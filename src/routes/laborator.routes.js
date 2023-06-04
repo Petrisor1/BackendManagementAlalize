@@ -13,6 +13,8 @@ module.exports =app =>{
 
     //actualizeaza un laborator in functie de id
     router.put("/actualizeaza_laborator/:id",laborator.update);
+    
+    router.post('/getEmailNume',laborator.emailNume);
 
     app.use("/laboratoare",router);
 }

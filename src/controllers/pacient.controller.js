@@ -58,3 +58,12 @@ exports.delete=(req,res)=>{
         }
     }).then(res.status(200).send({message:"Success"})).catch(err=>{res.status(500).send({message:err.nessage || "Eroare la stergerea unui pacient"})});
 }
+
+exports.iaByCNP=(req,res)=>{
+
+    Pacinet.findOne({where:{CNP:req.body.CNP}}).then(response=>{
+       let modifiedResult = response.toJSON(); // convert instance to JSON
+            modifiedResult.newParam = "New Parameter Value"; // add new parameter
+            res.send(modifiedResult);
+    }).catch(err=>{res.status(500).send(err.message)});
+}

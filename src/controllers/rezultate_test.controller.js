@@ -88,8 +88,8 @@ exports.iaDateFrontAdaugaBazaDate = (req, res) => {
         let valoare_rezultat = table.cells.find(cell => cell.rowIndex === i && cell.columnIndex === 1);
         let interval_referinta = table.cells.find(cell => cell.rowIndex === i && cell.columnIndex === 2);
         let unitate = table.cells.find(cell => cell.rowIndex === i && cell.columnIndex === 3);
-
-        if (test && valoare_rezultat && interval_referinta && unitate) {
+        
+        if (test && valoare_rezultat && interval_referinta && unitate && test.content!=`Parametrii` ) {
             let result = {
                 "tip_test": tip_test,
                 "test": test.content,
