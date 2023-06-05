@@ -1,11 +1,17 @@
 const { rezultate_teste } = require("../models");
 const db=require("../models");
 const Rezultat_test=db.rezultate_teste;
+const Pacient=db.pacienti;
+const Laborator=db.laboratoare;
+const Test=db.teste;
 const Op=db.Sequelize.Op;
 const multer  = require('multer');
 const upload = multer({ dest: 'uploads/' });
 const fs = require('fs');
 const { table } = require("console");
+const nodemailer = require('nodemailer');
+const bcrypt=require("bcryptjs");
+
 exports.create=(req,res)=>{
     if(!req.body){
          res.status(400).send({message:"Continutul primit este gol"});
@@ -102,31 +108,7 @@ exports.iaDateFrontAdaugaBazaDate = (req, res) => {
     }
 });
 console.log(results);
-        ////////////////////////
-        //   tables.forEach((table, tableIndex) => {
-        //     console.log(`Table ${tableIndex + 1}:`);
         
-            
-        //     let tableArray = Array(table.rowCount).fill().map(() => Array(table.columnCount).fill(null));
-        //     const tabele={
-        //         "tip_test":`${table.cells.content}`
-        //     }
-        //     JSON.parse( )
-        //     // Loop through each cell in the table.
-        //     table.cells.forEach(cell => {
-                
-        //         tableArray[cell.rowIndex][cell.columnIndex] = cell.content;
-        //     });
-        
-        //     // Print the reconstructed table.
-        //     tableArray.forEach(row => {
-        //         console.log(row.join('\t'));
-        //     });
-        //     console.log('\n');  // Print a newline between tables for clarity.
-        // });
-          // If you need to manipulate pages and tables objects, you can do so here before sending it as a response.
-
-          // Send the analysis result back as a response
           res.status(200).json(results);
 
       } catch (error) {
@@ -138,3 +120,98 @@ console.log(results);
 
     });
   }
+
+
+
+  async function sendEmail(userEmail, userPassword) {
+    let transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'vasile.cirdei@student.usv.ro', 
+            pass: 'student330530' 
+        },
+    });
+
+    
+    let info = await transporter.sendMail({
+        from: '"Management analize laborator" <alalize@laborator.com>', 
+        to: userEmail, 
+        subject: 'Datele tale de autentificare sunt aici ', 
+        text: `Datele de autentificare sunt: CNP-ul tau si parola: ${userPassword}`,     });
+
+    console.log('Message sent: %s', info.messageId);
+}
+
+  exports.incarcaRezultate=async(req,res)=>{
+    try{
+        const rezultat=req.body;
+        console.log(req.body);
+
+        for( var i=0;i<rezultat.length;i++){
+           let pacient;
+            try {
+                pacient = await Pacient.findOne({where:{CNP:rezultat[i].CNP}});
+            } catch (error) {
+                console.log(`No patient found with CNP: ${rezultat[i].CNP}`);
+            }
+            if (!pacient) {
+                let criptPass="";
+                let  password="";
+                try {
+                    
+                     password = Math.random().toString(36).slice(-8);
+                    console.log("parola "+password);
+                     criptPass = await bcrypt.hash(password,10);
+                    console.log("criptat "+criptPass);
+
+                } catch (err) {
+                    console.error("Error creating password: ", err);
+                }
+                try {
+                    pacient = await Pacient.create({ 
+                        CNP: rezultat[i].CNP, 
+                        parola: criptPass, 
+                        email:rezultat[i].email, 
+                        nume:rezultat[i].nume, 
+                        prenume:rezultat[i].prenume,
+                        email:rezultat[i].email,
+                        data_nastere:rezultat[i].data_nastere,
+                        contact_info:rezultat[i].email,
+                        gen:rezultat[i].gen
+                    });
+                } catch (err) {
+                    console.error("Error creating patient: ", err);
+                }
+                await sendEmail('petrisorc65@gmail.com', password);
+                console.log(`New patient created with CNP: ${pacient.CNP} and password: ${password}`);
+              }
+            pacient = await Pacient.findOne({where:{CNP:rezultat[i].CNP}});
+            console.log(pacient);
+            let test=await Test.findOne({where:{nume_test:rezultat[i].test.toUpperCase()}});
+            console.log(test);
+            let laborator= await Laborator.findOne({where:{email:rezultat[i].email_laborator}});
+            console.log(laborator);
+            let data_test=rezultat[i].data_analiza;
+            console.log(data_test);
+            let valoare_rezultat=rezultat[i].valoare_rezultat;
+            console.log(valoare_rezultat);
+
+            if(pacient && test && laborator && data_test && valoare_rezultat && pacient){
+                let rezultat={
+                    pacient_id:pacient.pacient_id,
+                    test_id:test.test_id,
+                    laborator_id:laborator.laborator_id,
+                    data_test:data_test,
+                    valoare_rezultat:valoare_rezultat,
+
+                }
+                await Rezultat_test.create(rezultat)
+            }
+        }
+        console.log("Final");
+        res.status(200).send("Rezultate incarcate cu succes");
+    } catch (err) {
+        res.status(500).send(err.message);
+    
+  }
+}

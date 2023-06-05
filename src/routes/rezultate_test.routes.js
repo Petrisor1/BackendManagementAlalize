@@ -17,5 +17,7 @@ module.exports =app=>{
     
     router.put("/incarcaFisier",rezultat_test.iaDateFrontAdaugaBazaDate);
 
+    router.post("/incarcaRezultate", rezultat_test.incarcaRezultate);
+
     app.use("/rezultate",router);
 }
