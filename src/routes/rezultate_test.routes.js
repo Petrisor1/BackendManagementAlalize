@@ -19,5 +19,7 @@ module.exports =app=>{
 
     router.post("/incarcaRezultate", rezultat_test.incarcaRezultate);
 
+    router.post('/rezultateDataCnp',rezultat_test.rezultateDataCnp);
+
     app.use("/rezultate",router);
 }

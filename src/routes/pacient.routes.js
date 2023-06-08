@@ -16,5 +16,7 @@ module.exports =app=>{
 
     router.post("/iaByCNP",pacient.iaByCNP);
 
+    router.get('/pacientiData_test', pacient.pacientiData_test);
+
     app.use("/pacienti",router);
 }

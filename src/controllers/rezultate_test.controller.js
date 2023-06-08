@@ -11,7 +11,7 @@ const fs = require('fs');
 const { table } = require("console");
 const nodemailer = require('nodemailer');
 const bcrypt=require("bcryptjs");
-
+const {sequelize} =require("../models/index.js");
 exports.create=(req,res)=>{
     if(!req.body){
          res.status(400).send({message:"Continutul primit este gol"});
@@ -214,4 +214,11 @@ console.log(results);
         res.status(500).send(err.message);
     
   }
+}
+
+exports.rezultateDataCnp=async(req,res)=>{
+    const cerere=req.body;
+     await sequelize.query(`SELECT t.tip_nume, ts.nume_test , r.valoare_rezultat , ts.valoare_maxima , ts.valoare_minima, ts.unitate FROM tipuri_teste t, teste ts, rezultate_teste r, pacienti p WHERE r.test_id=ts.test_id AND t.tip_id = ts.tip_id AND p.CNP='${cerere.CNP}' AND r.data_test='${cerere.data_test}'`, { type: sequelize.QueryTypes.SELECT })
+    .then(result => res.send(result)).catch(err=> res.send(err));
+ 
 }

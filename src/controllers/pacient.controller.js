@@ -1,8 +1,9 @@
 const db=require("../models");
 const bcrypt=require("bcryptjs");
-const Pacinet=db.pacienti;
+const { Sequelize } = require('sequelize');
+const Pacient=db.pacienti;
 const Op=db.Sequelize.Op;
-
+const RezultateTeste=db.rezultate_teste;
 exports.create=(req,res)=>{
     if(!req.body)
     {
@@ -10,7 +11,7 @@ exports.create=(req,res)=>{
     }
     else{
         bcrypt.hash(req.body.parola,10).then((hash)=>{
-            Pacinet.create({
+            Pacient.create({
                 nume:req.body.nume,
                 prenume:req.body.prenume,
                 data_nastere:req.body.data_nastere,
@@ -28,13 +29,13 @@ exports.create=(req,res)=>{
 }
 
 exports.findAll =(req,res)=>{
-    Pacinet.findAll().then(pacienti=>res.send(pacienti).catch(err => res.status(500).send({massage:"Eroare la obtinerea pacientilor"})));
+    Pacient.findAll().then(pacienti=>res.send(pacienti).catch(err => res.status(500).send({massage:"Eroare la obtinerea pacientilor"})));
 }
 
 exports.update=(req,res)=>{
     const id=req.params.pacient_id;
 
-    Pacinet.update(req.body,{where:{pacient_id:id}}).then(num=>{
+    Pacient.update(req.body,{where:{pacient_id:id}}).then(num=>{
         if(nume==1)
         {
             res.send({message:"Informatia a fost updatata cu succes"});
@@ -48,7 +49,7 @@ exports.update=(req,res)=>{
 exports.delete=(req,res)=>{
     const id=req.params.id;
 
-    Pacinet.destroy({where:{pacient_id:id}}).then(num=>{
+    Pacient.destroy({where:{pacient_id:id}}).then(num=>{
         if(num==1)
         {
             res.send({message:"Pacientul a fost sters cu succes"});
@@ -61,9 +62,27 @@ exports.delete=(req,res)=>{
 
 exports.iaByCNP=(req,res)=>{
 
-    Pacinet.findOne({where:{CNP:req.body.CNP}}).then(response=>{
+    Pacient.findOne({where:{CNP:req.body.CNP}}).then(response=>{
        let modifiedResult = response.toJSON(); // convert instance to JSON
             modifiedResult.newParam = "New Parameter Value"; // add new parameter
             res.send(modifiedResult);
     }).catch(err=>{res.status(500).send(err.message)});
+}
+
+exports.pacientiData_test=(req,res)=>{
+    Pacient.findAll({
+        attributes: [
+          [Sequelize.literal('DISTINCT CONCAT(nume, " ", prenume)'), 'Nume_Prenume'],
+          'CNP',
+          'data_nastere',
+          'gen',
+          [Sequelize.col('rezultate_teste.data_test'), 'data_test']
+        ],
+        include: {
+          model: RezultateTeste,
+          as: 'rezultate_teste', 
+          attributes: []
+        },
+        raw: true
+      }).then(data => res.send(data)).catch(err => res.send(err));
 }
