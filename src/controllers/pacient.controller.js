@@ -4,6 +4,7 @@ const { Sequelize } = require('sequelize');
 const Pacient=db.pacienti;
 const Op=db.Sequelize.Op;
 const RezultateTeste=db.rezultate_teste;
+const {sequelize} =require("../models/index.js");
 exports.create=(req,res)=>{
     if(!req.body)
     {
@@ -85,4 +86,13 @@ exports.pacientiData_test=(req,res)=>{
         },
         raw: true
       }).then(data => res.send(data)).catch(err => res.send(err));
+}
+
+exports.analizePacient=async(req,res)=>{
+    const cerere=req.body;
+
+     await sequelize.query(`SELECT DISTINCT concat(p.nume ,' ', p.prenume) as Nume ,p.CNP, p.data_nastere , p.gen , r.data_test   FROM pacienti p  , rezultate_teste r 
+     WHERE r.pacient_id=p.pacient_id AND p.CNP='${cerere.CNP}'`, { type: sequelize.QueryTypes.SELECT })
+
+    .then(result => res.send(result)).catch(err=> res.send(err));
 }
