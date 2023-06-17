@@ -14,6 +14,7 @@ module.exports =app=>{
     //actualizeaza test in functie de id
     router.put("/update_test/:id",test.update);
 
+    router.post("/rezultateNegative",test.rezultateNegative);
     app.use("/teste",router);
 
 }

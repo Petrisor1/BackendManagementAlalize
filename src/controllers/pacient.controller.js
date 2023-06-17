@@ -91,8 +91,8 @@ exports.pacientiData_test=(req,res)=>{
 exports.analizePacient=async(req,res)=>{
     const cerere=req.body;
 
-     await sequelize.query(`SELECT DISTINCT concat(p.nume ,' ', p.prenume) as Nume ,p.CNP, p.data_nastere , p.gen , r.data_test   FROM pacienti p  , rezultate_teste r 
-     WHERE r.pacient_id=p.pacient_id AND p.CNP='${cerere.CNP}'`, { type: sequelize.QueryTypes.SELECT })
+     await sequelize.query(`SELECT DISTINCT concat(p.nume ,' ', p.prenume) as Nume_Prenume ,p.CNP, p.data_nastere , p.gen , r.data_test   FROM pacienti p  , rezultate_teste r 
+     WHERE r.pacient_id=p.pacient_id AND p.CNP='${cerere.CNP}' `, { type: sequelize.QueryTypes.SELECT })
 
     .then(result => res.send(result)).catch(err=> res.send(err));
 }

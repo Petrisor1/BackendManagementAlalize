@@ -1,7 +1,7 @@
 const db=require("../models");
 const bcrypt=require("bcryptjs");
 const Test=db.teste;
-
+const {sequelize} =require("../models/index.js");
 exports.create=(req,res)=>{
     if(!req.body)
     {
@@ -53,4 +53,17 @@ exports.delete=(req,res)=>{
     }
 
  }).catch(err=>res.status(500).send({message:err.message + " Eroare la stergeera testului"}));
+}
+
+
+exports.rezultateNegative=async(req,res)=>{
+    const CNP= req.body.CNP;
+    const data_test=req.body.data_test;
+    await sequelize.query(`SELECT t.nume_test, r.valoare_rezultat, t.valoare_minima, t.valoare_maxima FROM teste t , pacienti p, rezultate_teste r 
+    WHERE r.test_id=t.test_id AND p.pacient_id=r.pacient_id AND  p.CNP='${CNP}' AND r.data_test='${data_test}' 
+    AND  r.valoare_rezultat  NOT BETWEEN  t.valoare_minima AND t.valoare_maxima; 
+     `,{ type: sequelize.QueryTypes.SELECT })
+     .then(data=>{
+        res.send(data);
+     }).catch(err=>{res.send(err)});
 }
