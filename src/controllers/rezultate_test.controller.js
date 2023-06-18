@@ -225,12 +225,16 @@ exports.rezultateDataCnp=async(req,res)=>{
 
 exports.rezultateNume_valoare=async(req,res)=>{
     const cerere=req.body;
-    await sequelize.query(` SELECT t.nume_test, r.valoare_rezultat, r.data_test
-FROM rezultate_teste r
-JOIN teste t ON r.test_id = t.test_id
-JOIN pacienti p ON r.pacient_id = p.pacient_id
-WHERE p.CNP = '${cerere.CNP}'
-ORDER BY r.data_test;`,{ type: sequelize.QueryTypes.SELECT })
+//     await sequelize.query(` SELECT t.nume_test, r.valoare_rezultat, r.data_test
+// FROM rezultate_teste r
+// JOIN teste t ON r.test_id = t.test_id
+// JOIN pacienti p ON r.pacient_id = p.pacient_id
+// WHERE p.CNP = '${cerere.CNP}'
+// ORDER BY r.data_test;`,{ type: sequelize.QueryTypes.SELECT })
+await sequelize.query(` SELECT t.nume_test , r.valoare_rezultat,r.data_test 
+FROM teste t , rezultate_teste r, pacienti p  
+WHERE p.CNP='${cerere.CNP}' AND p.pacient_id=r.pacient_id AND t.test_id=r.test_id AND t.valoare_maxima<20 ORDER BY r.data_test;`
+,{ type: sequelize.QueryTypes.SELECT })
     .then(rez => { if(rez.length!=0)
     {
         let rezultatePrelucrate = {};
@@ -238,13 +242,11 @@ ORDER BY r.data_test;`,{ type: sequelize.QueryTypes.SELECT })
         rez.forEach(rezultat => {
         const numeTest = rezultat.nume_test;
 
-  // Daca acest nume de test nu exista inca in obiect, il adaugam
 
   if (!rezultatePrelucrate[numeTest]) {
     rezultatePrelucrate[numeTest] = [];
   }
 
-  // Adaugam rezultatul la lista pentru acest nume de test
   rezultatePrelucrate[numeTest].push(
     {valoare:rezultat.valoare_rezultat,
     data:rezultat.data_test
@@ -257,5 +259,14 @@ ORDER BY r.data_test;`,{ type: sequelize.QueryTypes.SELECT })
 exports.dataAnalize=async(req,res)=>{
     const cerere=req.body.CNP;
     await sequelize.query(`SELECT DISTINCT r.data_test FROM rezultate_teste  r, pacienti p WHERE p.CNP='${cerere}' AND p.pacient_id=r.pacient_id;`,{ type: sequelize.QueryTypes.SELECT })
+    .then(result=>{res.send(result)}).catch(err=> res.send(err));
+}
+
+exports.rezultateTipTest=async(req,res)=>{
+    CNP =req.body.CNP;
+    tip_nume=req.body.tip_nume;
+    await sequelize.query(`SELECT t.nume_test, r.valoare_rezultat, r.data_test  
+    FROM teste t, rezultate_teste r, tipuri_teste tt, pacienti p  WHERE p.CNP='${CNP}' AND tt.tip_nume='${tip_nume}' 
+    AND p.pacient_id=r.pacient_id AND t.tip_id=tt.tip_id AND t.test_id=r.test_id  ORDER BY t.nume_test ;`,{ type: sequelize.QueryTypes.SELECT })
     .then(result=>{res.send(result)}).catch(err=> res.send(err));
 }

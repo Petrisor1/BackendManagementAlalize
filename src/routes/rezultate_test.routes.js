@@ -24,5 +24,8 @@ module.exports =app=>{
     router.post ('/rezultateNume_valoare',rezultat_test.rezultateNume_valoare);
     
     router.post('/dataAnalize',rezultat_test.dataAnalize);
+
+    router.post('/rezultateTipTest',rezultat_test.rezultateTipTest);
+
     app.use("/rezultate",router);
 }
