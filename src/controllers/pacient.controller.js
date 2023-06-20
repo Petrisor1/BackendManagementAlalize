@@ -96,3 +96,12 @@ exports.analizePacient=async(req,res)=>{
 
     .then(result => res.send(result)).catch(err=> res.send(err));
 }
+
+exports.totAnalize=async(req,res)=>{
+    await sequelize.query('SELECT COUNT(*) AS totAnalize FROM (SELECT DISTINCT CONCAT(nume, " ", prenume) AS `Nume_Prenume`, `pacienti`.`CNP`,`pacienti`.`data_nastere`, `pacienti`.`gen`, `rezultate_teste`.`data_test` AS `data_test` FROM `pacienti` AS `pacienti` LEFT OUTER JOIN `rezultate_teste` AS `rezultate_teste`  ON `pacienti`.`pacient_id` = `rezultate_teste`.`pacient_id`) AS subquery;',{ type: sequelize.QueryTypes.SELECT })
+    .then(rezult=>res.send(rezult)).catch(err=>res.send(err));
+}
+exports.totPacienti=async(req,res)=>{
+    await sequelize.query('SELECT COUNt(*) AS totPacienti FROM pacienti;',{ type: sequelize.QueryTypes.SELECT })
+    .then(result => res.send(result)).catch(err=> res.send(err));
+}
