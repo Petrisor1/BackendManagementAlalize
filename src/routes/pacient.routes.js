@@ -21,8 +21,9 @@ module.exports =app=>{
     router.post('/analizePacient',pacient.analizePacient);
 
     router.get('/totAnalize',pacient.totAnalize);
-    
+
     router.get('/totPacienti',pacient.totPacienti);
 
+    router.get('/medieRezultate',pacient.medieRezultate);
     app.use("/pacienti",router);
 }

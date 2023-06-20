@@ -105,3 +105,8 @@ exports.totPacienti=async(req,res)=>{
     await sequelize.query('SELECT COUNt(*) AS totPacienti FROM pacienti;',{ type: sequelize.QueryTypes.SELECT })
     .then(result => res.send(result)).catch(err=> res.send(err));
 }
+
+exports.medieRezultate=async(req,res)=>{
+    await sequelize.query('SELECT t.nume_test, avg(r.valoare_rezultat) as medie from teste t, rezultate_teste r WHERE t.test_id=r.test_id GROUP BY nume_test ;',{ type: sequelize.QueryTypes.SELECT })
+    .then(result => res.send(result)).catch(err=> res.send(err));
+}
