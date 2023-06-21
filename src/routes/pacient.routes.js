@@ -25,5 +25,6 @@ module.exports =app=>{
     router.get('/totPacienti',pacient.totPacienti);
 
     router.get('/medieRezultate',pacient.medieRezultate);
+    
     app.use("/pacienti",router);
 }
