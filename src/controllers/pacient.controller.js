@@ -107,6 +107,23 @@ exports.totPacienti=async(req,res)=>{
 }
 
 exports.medieRezultate=async(req,res)=>{
-    await sequelize.query('SELECT t.nume_test, avg(r.valoare_rezultat) as medie from teste t, rezultate_teste r WHERE t.test_id=r.test_id WHERE r.valoare_rezultat<1000 GROUP BY nume_test ;',{ type: sequelize.QueryTypes.SELECT })
+    await sequelize.query('SELECT t.nume_test, avg(r.valoare_rezultat) as medie from teste t, rezultate_teste r WHERE t.test_id=r.test_id AND r.valoare_rezultat<275 GROUP BY nume_test ;',{ type: sequelize.QueryTypes.SELECT })
     .then(result => res.send(result)).catch(err=> res.send(err));
+}
+
+exports.analizeFrecvente=async(req,res)=>{
+    const Hematologie= await sequelize.query('SELECT t.tip_nume, count(nume_test)/(20) as valoare FROM tipuri_teste t, teste tt , rezultate_teste r  WHERE tt.tip_id=t.tip_id AND tt.test_id=r.test_id AND t.tip_nume="HEMATOLOGIE" GROUP BY t.tip_nume;')
+    .then(data=>{return data})
+    const Biochimie= await sequelize.query('SELECT t.tip_nume, count(nume_test)/(9) as valoare FROM tipuri_teste t, teste tt , rezultate_teste r  WHERE tt.tip_id=t.tip_id AND tt.test_id=r.test_id AND t.tip_nume="BIOCHIMIE" GROUP BY t.tip_nume;')
+    .then(data=>{return data})
+    const Urina= await sequelize.query('SELECT t.tip_nume, count(nume_test)/(7) as valoare FROM tipuri_teste t, teste tt , rezultate_teste r  WHERE tt.tip_id=t.tip_id AND tt.test_id=r.test_id AND t.tip_nume="URINA" GROUP BY t.tip_nume;')
+    .then(data=>{return data})
+    const Vsh= await sequelize.query('SELECT t.tip_nume, count(nume_test)/(1) as valoare FROM tipuri_teste t, teste tt , rezultate_teste r  WHERE tt.tip_id=t.tip_id AND tt.test_id=r.test_id AND t.tip_nume="VSH" GROUP BY t.tip_nume;')
+    .then(data=>{return data})
+
+    res.send({'HEMATOLOGIE':Hematologie,
+              'BIOCHIMIE':Biochimie,
+            'URINA':Urina,
+            'VSH':Vsh});
+
 }

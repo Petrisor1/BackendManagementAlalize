@@ -26,5 +26,7 @@ module.exports =app=>{
 
     router.get('/medieRezultate',pacient.medieRezultate);
     
+    router.get('/analizeFrecvente',pacient.analizeFrecvente);
+
     app.use("/pacienti",router);
 }
